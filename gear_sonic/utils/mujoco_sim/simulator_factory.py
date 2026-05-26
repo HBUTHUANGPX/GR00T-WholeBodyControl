@@ -37,6 +37,8 @@ class SimulatorFactory:
         simulator_type = config.get("SIMULATOR", "mujoco")
         if simulator_type == "mujoco":
             return SimulatorFactory._create_mujoco_simulator(config, env_name, **kwargs)
+        elif simulator_type == "motrixsim":
+            return SimulatorFactory._create_motrixsim_simulator(config, env_name, **kwargs)
         else:
             print(
                 f"Warning: Invalid simulator type: {simulator_type}. "
@@ -48,6 +50,20 @@ class SimulatorFactory:
     def _create_mujoco_simulator(config: Dict[str, Any], env_name: str = "default", **kwargs):
         """Create a MuJoCo simulator instance."""
         return BaseSimulator(
+            onscreen=kwargs.pop("onscreen", True),
+            offscreen=kwargs.pop("offscreen", False),
+            enable_image_publish=kwargs.get("enable_image_publish", False),
+            config=config,
+            env_name=env_name,
+            redis_client=kwargs.get("redis_client", None),
+        )
+
+    @staticmethod
+    def _create_motrixsim_simulator(config: Dict[str, Any], env_name: str = "default", **kwargs):
+        """Create a MotrixSim simulator instance."""
+        from gear_sonic.utils.motrixsim_sim.base_sim import BaseSimulator as MotrixSimSimulator
+
+        return MotrixSimSimulator(
             onscreen=kwargs.pop("onscreen", True),
             offscreen=kwargs.pop("offscreen", False),
             enable_image_publish=kwargs.get("enable_image_publish", False),

@@ -89,6 +89,15 @@ def override_wbc_config(
         "waist_pitch_limit": config.waist_pitch_limit,
         "hand_torque_limit": config.hand_torque_limit,
         "enable_natural_walk": config.enable_natural_walk,
+        "MOTRIXSIM_SHOW_HUMAN_REFERENCE": config.motrixsim_show_human_reference,
+        "MOTRIXSIM_HUMAN_REFERENCE_PATH": config.motrixsim_human_reference_path,
+        "MOTRIXSIM_HUMAN_REFERENCE_FPS": config.motrixsim_human_reference_fps,
+        "MOTRIXSIM_HUMAN_REFERENCE_LATERAL_OFFSET": config.motrixsim_human_reference_lateral_offset,
+        "MOTRIXSIM_HUMAN_REFERENCE_FORWARD_OFFSET": config.motrixsim_human_reference_forward_offset,
+        "MOTRIXSIM_HUMAN_REFERENCE_SYNC_ZMQ": config.motrixsim_human_reference_sync_zmq,
+        "MOTRIXSIM_HUMAN_REFERENCE_SYNC_HOST": config.motrixsim_human_reference_sync_host,
+        "MOTRIXSIM_HUMAN_REFERENCE_SYNC_PORT": config.motrixsim_human_reference_sync_port,
+        "MOTRIXSIM_HUMAN_REFERENCE_SYNC_TOPIC": config.motrixsim_human_reference_sync_topic,
     }
 
     if missed_keys_only:
@@ -204,6 +213,34 @@ class BaseConfig(ArgsConfigTemplate):
 
     enable_natural_walk: bool = False
     """Enable natural walk mode."""
+
+    # MotrixSim visualization configuration
+    motrixsim_show_human_reference: bool = True
+    """Show offline SMPL human reference in the MotrixSim GUI when available."""
+
+    motrixsim_human_reference_path: Optional[str] = None
+    """Deploy reference root or motion directory containing smpl_joint.csv."""
+
+    motrixsim_human_reference_fps: float = 50.0
+    """Playback FPS for the MotrixSim human reference skeleton."""
+
+    motrixsim_human_reference_lateral_offset: float = 1.25
+    """Y offset for drawing the human skeleton beside the robot."""
+
+    motrixsim_human_reference_forward_offset: float = 0.0
+    """X offset for drawing the human skeleton beside the robot."""
+
+    motrixsim_human_reference_sync_zmq: bool = True
+    """Synchronize human skeleton frames from deploy's ZMQ debug stream."""
+
+    motrixsim_human_reference_sync_host: str = "localhost"
+    """Deploy ZMQ debug host used for MotrixSim human reference sync."""
+
+    motrixsim_human_reference_sync_port: int = 5557
+    """Deploy ZMQ debug port used for MotrixSim human reference sync."""
+
+    motrixsim_human_reference_sync_topic: str = "g1_debug"
+    """Deploy ZMQ debug topic used for MotrixSim human reference sync."""
 
     # Teleop/Device Configuration
     body_control_device: str = "dummy"

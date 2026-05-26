@@ -64,6 +64,7 @@
  *  20  | base_trans_target      | double[3]    | Target base translation.
  *  21  | base_quat_target       | double[4]    | Target base quaternion.
  *  22  | body_q_target          | double[29]   | Target joint positions.
+ *      | current_motion_frame   | double[1]    | Current reference frame used by deploy.
  *      |                        |              |
  *      | **Viz: measured**      |              |
  *  23  | base_trans_measured    | double[3]    | Measured base translation (fixed default).
@@ -396,6 +397,7 @@ private:
 
         // ---- Visualisation fields (from output_data_map_) ----
         // Adds: base_trans_target, base_quat_target, body_q_target,
+        //       current_motion_frame,
         //       base_trans_measured, base_quat_measured, body_q_measured,
         //       left_hand_q_measured, right_hand_q_measured,
         //       vr_3point_position, vr_3point_orientation, vr_3point_compliance

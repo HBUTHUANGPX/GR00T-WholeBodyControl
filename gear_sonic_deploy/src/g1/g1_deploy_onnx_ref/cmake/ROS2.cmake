@@ -35,7 +35,17 @@ foreach(install_path ${ROS2_INSTALL_PATHS})
       file(GLOB ROS2_INCLUDE_SUBDIRS "${ros2_include_path}/*")
       foreach(subdir ${ROS2_INCLUDE_SUBDIRS})
         if(IS_DIRECTORY ${subdir})
-          list(APPEND ROS2_INCLUDE_DIRS ${subdir})
+          get_filename_component(subdir_name "${subdir}" NAME)
+          # Do not add package folders that shadow libc/C++ system headers.
+          # In particular, /opt/ros/*/include/dds contains dds/features.h;
+          # adding that directory directly makes <features.h> resolve to the
+          # DDS header instead of glibc's header during C++ standard-library
+          # includes.
+          if(NOT subdir_name STREQUAL "dds"
+             AND NOT subdir_name STREQUAL "ddsc"
+             AND NOT subdir_name STREQUAL "ddscxx")
+            list(APPEND ROS2_INCLUDE_DIRS ${subdir})
+          endif()
         endif()
       endforeach()
       set(ROS2_DISTRO_FOUND "${distro}")

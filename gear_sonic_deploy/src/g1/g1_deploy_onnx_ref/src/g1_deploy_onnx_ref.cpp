@@ -2381,8 +2381,16 @@ class G1Deploy {
       // Set the encode_mode for all loaded reference motions based on encoder availability
       std::cout << "Setting encode_mode for " << motion_reader_.motions.size() << " loaded reference motions..." << std::endl;
       for (auto& motion : motion_reader_.motions) {
-        motion->SetEncodeMode(initial_encoder_mode_);
-        std::cout << "  Motion '" << motion->name << "' encode_mode set to: " << initial_encoder_mode_ << std::endl;
+        int motion_encoder_mode = initial_encoder_mode_;
+        if (initial_encoder_mode_ >= 0 && motion->GetNumSmplJoints() >= 24) {
+          motion_encoder_mode = 2;
+        }
+        motion->SetEncodeMode(motion_encoder_mode);
+        std::cout << "  Motion '" << motion->name << "' encode_mode set to: " << motion_encoder_mode;
+        if (motion_encoder_mode == 2 && motion_encoder_mode != initial_encoder_mode_) {
+          std::cout << " (offline SMPL reference detected)";
+        }
+        std::cout << std::endl;
       }
       
       // Set encode_mode for planner motion
@@ -4465,4 +4473,3 @@ int main(int argc, char const* argv[]) {
   std::cout << "[DEBUG] Program exiting normally..." << std::endl;
   return 0;
 }
-
