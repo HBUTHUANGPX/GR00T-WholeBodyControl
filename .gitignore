@@ -221,3 +221,4 @@ sample_data/
 sonic_release/
 gear_sonic_deploy/reference/*
 !gear_sonic_deploy/reference/convert_bvh_export_motions.py
+!gear_sonic_deploy/reference/encode_motion_tokens.py
