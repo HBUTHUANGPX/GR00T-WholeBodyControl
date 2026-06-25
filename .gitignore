@@ -222,3 +222,6 @@ sonic_release/
 gear_sonic_deploy/reference/*
 !gear_sonic_deploy/reference/convert_bvh_export_motions.py
 !gear_sonic_deploy/reference/encode_motion_tokens.py
+!gear_sonic_deploy/reference/export_smpl_tokens.py
+!gear_sonic_deploy/reference/tests/
+!gear_sonic_deploy/reference/tests/test_export_smpl_tokens.py
