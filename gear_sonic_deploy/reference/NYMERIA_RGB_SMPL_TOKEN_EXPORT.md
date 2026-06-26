@@ -183,7 +183,24 @@ as `gear_sonic`, CPU-only PyTorch, `numpy`, `scipy`, `tqdm`, and
 local `gear_sonic` package with `--no-deps` so dependency resolution does not
 pull in a CUDA PyTorch build. It also runs `uv pip install --no-cache` with
 `UV_NO_CACHE=1` to avoid reusing stale server-side wheel metadata or packages
-from a previous install.
+from a previous install. The script unsets common package-index environment
+variables such as `PIP_INDEX_URL`, `PIP_EXTRA_INDEX_URL`, `UV_INDEX_URL`, and
+`UV_EXTRA_INDEX_URL`, then runs with `UV_NO_CONFIG=1` so server-level pip/uv
+source settings do not override the PyTorch CPU wheel source.
+
+If you want to check whether the current shell is setting package sources:
+
+```bash
+env | grep -E '^(PIP|UV)_(INDEX|EXTRA_INDEX|DEFAULT_INDEX|FIND_LINKS|CONFIG)'
+```
+
+You can also run the installer from a manually cleaned environment:
+
+```bash
+env -u PIP_INDEX_URL -u PIP_EXTRA_INDEX_URL \
+    -u UV_INDEX -u UV_INDEX_URL -u UV_EXTRA_INDEX_URL -u UV_DEFAULT_INDEX \
+    bash install_scripts/install_token_export.sh
+```
 
 To verify the installed PyTorch build:
 

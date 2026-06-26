@@ -9,7 +9,18 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 VENV_DIR="$REPO_ROOT/.venv_token_export"
+
+# Keep server-wide package source overrides from replacing the PyTorch CPU index.
+unset PIP_INDEX_URL
+unset PIP_EXTRA_INDEX_URL
+unset PIP_FIND_LINKS
+unset UV_INDEX
+unset UV_INDEX_URL
+unset UV_EXTRA_INDEX_URL
+unset UV_DEFAULT_INDEX
+unset UV_FIND_LINKS
 export UV_NO_CACHE=1
+export UV_NO_CONFIG=1
 
 ARCH="$(uname -m)"
 echo "[OK] Architecture: $ARCH"

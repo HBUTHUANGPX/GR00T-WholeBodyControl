@@ -20,6 +20,16 @@ class TokenExportEnvironmentTest(unittest.TestCase):
         self.assertIn('uv pip install --no-cache "torch" --index-url "https://download.pytorch.org/whl/cpu"', text)
         self.assertIn("uv pip install --no-cache \\", text)
         self.assertIn('uv pip install --no-cache -e "gear_sonic" --no-deps', text)
+        for name in (
+            "PIP_INDEX_URL",
+            "PIP_EXTRA_INDEX_URL",
+            "UV_INDEX",
+            "UV_INDEX_URL",
+            "UV_EXTRA_INDEX_URL",
+            "UV_DEFAULT_INDEX",
+        ):
+            self.assertIn(f"unset {name}", text)
+        self.assertIn("UV_NO_CONFIG=1", text)
         self.assertIn("onnxruntime", text)
         self.assertNotIn("setup_env.sh", text)
         self.assertNotIn("g1_deploy", text)
