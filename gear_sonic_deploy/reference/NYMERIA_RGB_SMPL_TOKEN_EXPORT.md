@@ -162,14 +162,31 @@ the SMPL source frames used for interpolation.
 
 ## Usage
 
-Run from `gear_sonic_deploy` and source the deploy environment first. For a
-root containing many sequences:
+Create the dedicated token-export Python environment once from the repository
+root:
 
 ```bash
-cd gear_sonic_deploy
-source scripts/setup_env.sh
+cd /path/to/GR00T-WholeBodyControl
+bash install_scripts/install_token_export.sh
+```
 
-python reference/export_nymeria_rgb_smpl_tokens.py \
+Activate that environment before exporting tokens:
+
+```bash
+source gear_sonic_deploy/scripts/setup_token_export_env.sh
+```
+
+This environment is intentionally separate from the deploy runtime environment.
+It installs only the Python dependencies needed by this offline exporter, such
+as `gear_sonic`, CPU-only PyTorch, `numpy`, `scipy`, `tqdm`, and
+`onnxruntime`. The installer uses the PyTorch CPU wheel index and installs the
+local `gear_sonic` package with `--no-deps` so dependency resolution does not
+pull in a CUDA PyTorch build.
+
+For a root containing many sequences:
+
+```bash
+python gear_sonic_deploy/reference/export_nymeria_rgb_smpl_tokens.py \
   /path/to/ny_batch_root \
   --overwrite
 ```
@@ -183,7 +200,7 @@ By default, the exporter shows two progress bars when `tqdm` is available:
 To disable progress bars, for example in redirected logs:
 
 ```bash
-python reference/export_nymeria_rgb_smpl_tokens.py \
+python gear_sonic_deploy/reference/export_nymeria_rgb_smpl_tokens.py \
   /path/to/ny_batch_root \
   --overwrite \
   --no-progress
@@ -192,7 +209,7 @@ python reference/export_nymeria_rgb_smpl_tokens.py \
 For one sequence, pass that sequence directory directly:
 
 ```bash
-python reference/export_nymeria_rgb_smpl_tokens.py \
+python gear_sonic_deploy/reference/export_nymeria_rgb_smpl_tokens.py \
   /path/to/ny_batch_root/<sequence_id> \
   --overwrite
 ```
@@ -200,7 +217,7 @@ python reference/export_nymeria_rgb_smpl_tokens.py \
 For a quick smoke test on a few RGB frames:
 
 ```bash
-python reference/export_nymeria_rgb_smpl_tokens.py \
+python gear_sonic_deploy/reference/export_nymeria_rgb_smpl_tokens.py \
   /path/to/ny_batch_root \
   --max-rgb-frames 10 \
   --overwrite
@@ -209,7 +226,7 @@ python reference/export_nymeria_rgb_smpl_tokens.py \
 Explicit paths are also supported:
 
 ```bash
-python reference/export_nymeria_rgb_smpl_tokens.py \
+python gear_sonic_deploy/reference/export_nymeria_rgb_smpl_tokens.py \
   --smpl-npz /path/to/nymeria_smpl.npz \
   --rgb-timestamps /path/to/head_video/timestamps.npz \
   --output /path/to/output_tokens.npz \
@@ -222,5 +239,5 @@ python reference/export_nymeria_rgb_smpl_tokens.py \
 - The internal SMPL encoder window is always 50 Hz.
 - The RGB video frame rate does not control the SMPL encoder frame rate.
 - Tail windows are intentionally clamped to the last SMPL frame.
-- The script requires the same Python environment needed by the existing SMPL
-  exporter: `torch`, `gear_sonic`, and `onnxruntime` must be importable.
+- Use `.venv_token_export` for this offline exporter so it does not inherit the
+  heavier deploy runtime setup.
