@@ -9,6 +9,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 VENV_DIR="$REPO_ROOT/.venv_token_export"
+export UV_NO_CACHE=1
 
 ARCH="$(uname -m)"
 echo "[OK] Architecture: $ARCH"
@@ -50,10 +51,10 @@ uv venv "$VENV_DIR" --python "$MANAGED_PY" --prompt gear_sonic_token_export
 source "$VENV_DIR/bin/activate"
 
 echo "[INFO] Installing CPU-only PyTorch..."
-uv pip install "torch" --index-url "https://download.pytorch.org/whl/cpu"
+uv pip install --no-cache "torch" --index-url "https://download.pytorch.org/whl/cpu"
 
 echo "[INFO] Installing token-export Python dependencies..."
-uv pip install \
+uv pip install --no-cache \
     "numpy==1.26.4" \
     "scipy==1.15.3" \
     "joblib" \
@@ -63,7 +64,7 @@ uv pip install \
     "onnxruntime"
 
 echo "[INFO] Installing local gear_sonic package without dependency re-resolution..."
-uv pip install -e "gear_sonic" --no-deps
+uv pip install --no-cache -e "gear_sonic" --no-deps
 
 echo "[INFO] Verifying token-export imports..."
 python - <<'PY'

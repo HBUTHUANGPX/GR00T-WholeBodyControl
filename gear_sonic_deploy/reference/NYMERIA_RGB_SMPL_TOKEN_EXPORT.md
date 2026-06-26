@@ -181,7 +181,21 @@ It installs only the Python dependencies needed by this offline exporter, such
 as `gear_sonic`, CPU-only PyTorch, `numpy`, `scipy`, `tqdm`, and
 `onnxruntime`. The installer uses the PyTorch CPU wheel index and installs the
 local `gear_sonic` package with `--no-deps` so dependency resolution does not
-pull in a CUDA PyTorch build.
+pull in a CUDA PyTorch build. It also runs `uv pip install --no-cache` with
+`UV_NO_CACHE=1` to avoid reusing stale server-side wheel metadata or packages
+from a previous install.
+
+To verify the installed PyTorch build:
+
+```bash
+python - <<'PY'
+import torch
+print("torch:", torch.__version__)
+print("torch.version.cuda:", torch.version.cuda)
+PY
+```
+
+For the intended CPU environment, `torch.version.cuda` should print `None`.
 
 For a root containing many sequences:
 
