@@ -9,18 +9,24 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 VENV_DIR="$REPO_ROOT/.venv_token_export"
+TOKEN_EXPORT_TORCH_SPEC="${TOKEN_EXPORT_TORCH_SPEC:-torch}"
+TOKEN_EXPORT_TORCH_INDEX_URL="${TOKEN_EXPORT_TORCH_INDEX_URL:-https://download.pytorch.org/whl/cpu}"
 
-# Keep server-wide package source overrides from replacing the PyTorch CPU index.
-unset PIP_INDEX_URL
-unset PIP_EXTRA_INDEX_URL
-unset PIP_FIND_LINKS
-unset UV_INDEX
-unset UV_INDEX_URL
-unset UV_EXTRA_INDEX_URL
-unset UV_DEFAULT_INDEX
-unset UV_FIND_LINKS
 export UV_NO_CACHE=1
-export UV_NO_CONFIG=1
+
+uv_without_package_indexes() (
+    # Keep server-wide package source overrides from replacing the PyTorch CPU index.
+    unset PIP_INDEX_URL
+    unset PIP_EXTRA_INDEX_URL
+    unset PIP_FIND_LINKS
+    unset UV_INDEX
+    unset UV_INDEX_URL
+    unset UV_EXTRA_INDEX_URL
+    unset UV_DEFAULT_INDEX
+    unset UV_FIND_LINKS
+    export UV_NO_CONFIG=1
+    uv "$@"
+)
 
 ARCH="$(uname -m)"
 echo "[OK] Architecture: $ARCH"
@@ -62,7 +68,30 @@ uv venv "$VENV_DIR" --python "$MANAGED_PY" --prompt gear_sonic_token_export
 source "$VENV_DIR/bin/activate"
 
 echo "[INFO] Installing CPU-only PyTorch..."
-uv pip install --no-cache "torch" --index-url "https://download.pytorch.org/whl/cpu"
+if [ -n "${TOKEN_EXPORT_TORCH_WHEEL:-}" ]; then
+    if [ ! -f "$TOKEN_EXPORT_TORCH_WHEEL" ]; then
+        echo "[ERROR] TOKEN_EXPORT_TORCH_WHEEL does not exist: $TOKEN_EXPORT_TORCH_WHEEL"
+        exit 1
+    fi
+    echo "[INFO] Installing PyTorch from local wheel: $TOKEN_EXPORT_TORCH_WHEEL"
+    uv pip install --no-cache "$TOKEN_EXPORT_TORCH_WHEEL"
+else
+    echo "[INFO] Installing $TOKEN_EXPORT_TORCH_SPEC from $TOKEN_EXPORT_TORCH_INDEX_URL"
+    if ! uv_without_package_indexes pip install --no-cache "$TOKEN_EXPORT_TORCH_SPEC" --index-url "$TOKEN_EXPORT_TORCH_INDEX_URL"; then
+        cat <<EOF
+[ERROR] CPU-only PyTorch install failed.
+
+If this server cannot reach the official PyTorch CPU wheel host, use one of:
+
+  TOKEN_EXPORT_TORCH_WHEEL=/path/to/torch-...+cpu-...whl bash install_scripts/install_token_export.sh
+
+  TOKEN_EXPORT_TORCH_INDEX_URL=https://your-internal-pytorch-cpu-index/simple \\
+  TOKEN_EXPORT_TORCH_SPEC='torch==<version>+cpu' \\
+  bash install_scripts/install_token_export.sh
+EOF
+        exit 1
+    fi
+fi
 
 echo "[INFO] Installing token-export Python dependencies..."
 uv pip install --no-cache \

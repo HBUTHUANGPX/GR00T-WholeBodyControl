@@ -17,7 +17,11 @@ class TokenExportEnvironmentTest(unittest.TestCase):
         self.assertIn(".venv_token_export", text)
         self.assertIn("gear_sonic_token_export", text)
         self.assertIn("https://download.pytorch.org/whl/cpu", text)
-        self.assertIn('uv pip install --no-cache "torch" --index-url "https://download.pytorch.org/whl/cpu"', text)
+        self.assertIn("TOKEN_EXPORT_TORCH_WHEEL", text)
+        self.assertIn("TOKEN_EXPORT_TORCH_INDEX_URL", text)
+        self.assertIn("TOKEN_EXPORT_TORCH_SPEC", text)
+        self.assertIn('"$TOKEN_EXPORT_TORCH_WHEEL"', text)
+        self.assertIn('"$TOKEN_EXPORT_TORCH_SPEC" --index-url "$TOKEN_EXPORT_TORCH_INDEX_URL"', text)
         self.assertIn("uv pip install --no-cache \\", text)
         self.assertIn('uv pip install --no-cache -e "gear_sonic" --no-deps', text)
         for name in (
@@ -53,6 +57,8 @@ class TokenExportEnvironmentTest(unittest.TestCase):
         self.assertIn("source gear_sonic_deploy/scripts/setup_token_export_env.sh", text)
         self.assertIn("CPU-only PyTorch", text)
         self.assertIn("no-cache", text)
+        self.assertIn("TOKEN_EXPORT_TORCH_WHEEL", text)
+        self.assertIn("TOKEN_EXPORT_TORCH_INDEX_URL", text)
         self.assertNotIn("source scripts/setup_env.sh", text)
 
 

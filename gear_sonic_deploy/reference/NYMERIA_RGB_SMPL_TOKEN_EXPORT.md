@@ -188,6 +188,23 @@ variables such as `PIP_INDEX_URL`, `PIP_EXTRA_INDEX_URL`, `UV_INDEX_URL`, and
 `UV_EXTRA_INDEX_URL`, then runs with `UV_NO_CONFIG=1` so server-level pip/uv
 source settings do not override the PyTorch CPU wheel source.
 
+If the server cannot reach the official PyTorch CPU wheel host, for example
+`download-r2.pytorch.org` fails with a proxy or tunnel error, use a reachable
+internal PyTorch CPU index:
+
+```bash
+TOKEN_EXPORT_TORCH_INDEX_URL=https://your-internal-pytorch-cpu-index/simple \
+TOKEN_EXPORT_TORCH_SPEC='torch==<version>+cpu' \
+bash install_scripts/install_token_export.sh
+```
+
+Or install from a pre-downloaded CPU wheel:
+
+```bash
+TOKEN_EXPORT_TORCH_WHEEL=/path/to/torch-<version>+cpu-cp310-cp310-linux_x86_64.whl \
+bash install_scripts/install_token_export.sh
+```
+
 If you want to check whether the current shell is setting package sources:
 
 ```bash
