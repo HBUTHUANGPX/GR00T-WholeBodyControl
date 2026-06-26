@@ -614,7 +614,7 @@ def compute_human_joints(
     global human_joints_info
 
     if human_joints_info is None:
-        human_joints_info = torch.load(human_joints_info_path)
+        human_joints_info = torch.load(human_joints_info_path, weights_only=False)
     J = human_joints_info["J"]
     parents_list = human_joints_info["parents_list"]
     rot_mats = human_joints_info["rot_mats"]

@@ -189,14 +189,23 @@ variables such as `PIP_INDEX_URL`, `PIP_EXTRA_INDEX_URL`, `UV_INDEX_URL`, and
 source settings do not override the PyTorch CPU wheel source.
 
 If the server cannot reach the official PyTorch CPU wheel host, for example
-`download-r2.pytorch.org` fails with a proxy or tunnel error, use a reachable
-internal PyTorch CPU index:
+`download-r2.pytorch.org` fails with a proxy or tunnel error, the installer
+automatically retries with the Aliyun PyTorch CPU mirror:
+
+```text
+https://mirrors.aliyun.com/pytorch-wheels/cpu
+```
+
+You can override the fallback with another reachable PyTorch CPU index:
 
 ```bash
-TOKEN_EXPORT_TORCH_INDEX_URL=https://your-internal-pytorch-cpu-index/simple \
+TOKEN_EXPORT_TORCH_FALLBACK_INDEX_URL=https://your-internal-pytorch-cpu-index/simple \
 TOKEN_EXPORT_TORCH_SPEC='torch==<version>+cpu' \
 bash install_scripts/install_token_export.sh
 ```
+
+You can also override the primary source with `TOKEN_EXPORT_TORCH_INDEX_URL`
+when you do not want the installer to try the official PyTorch host first.
 
 Or install from a pre-downloaded CPU wheel:
 

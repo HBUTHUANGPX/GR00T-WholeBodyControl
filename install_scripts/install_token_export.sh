@@ -11,6 +11,7 @@ REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 VENV_DIR="$REPO_ROOT/.venv_token_export"
 TOKEN_EXPORT_TORCH_SPEC="${TOKEN_EXPORT_TORCH_SPEC:-torch}"
 TOKEN_EXPORT_TORCH_INDEX_URL="${TOKEN_EXPORT_TORCH_INDEX_URL:-https://download.pytorch.org/whl/cpu}"
+TOKEN_EXPORT_TORCH_FALLBACK_INDEX_URL="${TOKEN_EXPORT_TORCH_FALLBACK_INDEX_URL:-https://mirrors.aliyun.com/pytorch-wheels/cpu}"
 
 export UV_NO_CACHE=1
 
@@ -78,6 +79,11 @@ if [ -n "${TOKEN_EXPORT_TORCH_WHEEL:-}" ]; then
 else
     echo "[INFO] Installing $TOKEN_EXPORT_TORCH_SPEC from $TOKEN_EXPORT_TORCH_INDEX_URL"
     if ! uv_without_package_indexes pip install --no-cache "$TOKEN_EXPORT_TORCH_SPEC" --index-url "$TOKEN_EXPORT_TORCH_INDEX_URL"; then
+        echo "[WARN] Primary PyTorch CPU source failed: $TOKEN_EXPORT_TORCH_INDEX_URL"
+        echo "[INFO] Retrying $TOKEN_EXPORT_TORCH_SPEC from $TOKEN_EXPORT_TORCH_FALLBACK_INDEX_URL"
+        if uv_without_package_indexes pip install --no-cache "$TOKEN_EXPORT_TORCH_SPEC" --index-url "$TOKEN_EXPORT_TORCH_FALLBACK_INDEX_URL"; then
+            echo "[OK] Installed PyTorch from fallback source: $TOKEN_EXPORT_TORCH_FALLBACK_INDEX_URL"
+        else
         cat <<EOF
 [ERROR] CPU-only PyTorch install failed.
 
@@ -89,7 +95,8 @@ If this server cannot reach the official PyTorch CPU wheel host, use one of:
   TOKEN_EXPORT_TORCH_SPEC='torch==<version>+cpu' \\
   bash install_scripts/install_token_export.sh
 EOF
-        exit 1
+            exit 1
+        fi
     fi
 fi
 

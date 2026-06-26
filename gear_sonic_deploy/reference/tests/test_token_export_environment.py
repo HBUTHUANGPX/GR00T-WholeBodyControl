@@ -19,9 +19,12 @@ class TokenExportEnvironmentTest(unittest.TestCase):
         self.assertIn("https://download.pytorch.org/whl/cpu", text)
         self.assertIn("TOKEN_EXPORT_TORCH_WHEEL", text)
         self.assertIn("TOKEN_EXPORT_TORCH_INDEX_URL", text)
+        self.assertIn("TOKEN_EXPORT_TORCH_FALLBACK_INDEX_URL", text)
         self.assertIn("TOKEN_EXPORT_TORCH_SPEC", text)
+        self.assertIn("mirrors.aliyun.com/pytorch-wheels/cpu", text)
         self.assertIn('"$TOKEN_EXPORT_TORCH_WHEEL"', text)
         self.assertIn('"$TOKEN_EXPORT_TORCH_SPEC" --index-url "$TOKEN_EXPORT_TORCH_INDEX_URL"', text)
+        self.assertIn('"$TOKEN_EXPORT_TORCH_SPEC" --index-url "$TOKEN_EXPORT_TORCH_FALLBACK_INDEX_URL"', text)
         self.assertIn("uv pip install --no-cache \\", text)
         self.assertIn('uv pip install --no-cache -e "gear_sonic" --no-deps', text)
         for name in (
@@ -59,6 +62,7 @@ class TokenExportEnvironmentTest(unittest.TestCase):
         self.assertIn("no-cache", text)
         self.assertIn("TOKEN_EXPORT_TORCH_WHEEL", text)
         self.assertIn("TOKEN_EXPORT_TORCH_INDEX_URL", text)
+        self.assertIn("Aliyun", text)
         self.assertNotIn("source scripts/setup_env.sh", text)
 
 
